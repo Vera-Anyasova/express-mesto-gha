@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const users = require("./routes/users");
 const cards = require("./routes/cards");
+const { PORT, DB_CONNECT } = require("./config");
 
-const { PORT = 3000 } = process.env;
 const app = express();
 
 app.use(express.json());
@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/mestodb", {
+  .connect(DB_CONNECT, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

@@ -1,8 +1,6 @@
-const mongoose = require("mongoose");
 const Card = require("../models/card");
-const ERROR_BAD_REQUEST = 400;
-const ERROR_NOT_FOUND = 404;
-const SERVER_ERROR = 500;
+const { checkErrors } = require("../handleErrors");
+const { ERROR_NOT_FOUND } = require("../config");
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -72,16 +70,3 @@ module.exports.removeLike = (req, res) => {
       checkErrors(err, res);
     });
 };
-
-function checkErrors(err, res) {
-  if (
-    err instanceof mongoose.Error.CastError ||
-    err instanceof mongoose.Error.ValidationError
-  ) {
-    res
-      .status(ERROR_BAD_REQUEST)
-      .send({ message: "Сlient sent an invalid request" });
-  } else {
-    res.status(SERVER_ERROR).send({ message: "Something went wrong" });
-  }
-}

@@ -12,4 +12,4 @@
 - логику обработки запросов описывает файл контроллеров - controllers;
 - в проекте осуществлена обработка 400, 404, 500 ошибок.
 
-Cсылка на GitHub Pages: https://vera-anyasova.github.io/express-mesto-gha/
+Cсылка на GitHub Pages: https://github.com/Vera-Anyasova/express-mesto-gha
