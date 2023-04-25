@@ -22,7 +22,7 @@ mongoose
 
 app.use((req, res, next) => {
   req.user = {
-    _id: "643bd62f1e6783623a6a7071",
+    _id: "64475124f70b70d379c6e4f3",
   };
 
   next();
@@ -32,7 +32,7 @@ app.use("/users", users);
 app.use("/cards", cards);
 
 app.use("*", (req, res) => {
-  res.status(500).send({ message: "Something went wrong" });
+  res.status(404).send({ message: "Not found" });
 });
 
 app.listen(PORT, () => {

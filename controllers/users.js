@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const User = require("../models/user");
 const ERROR_BAD_REQUEST = 400;
 const ERROR_NOT_FOUND = 404;
@@ -7,28 +8,21 @@ module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        res
-          .status(ERROR_BAD_REQUEST)
-          .send({ message: "Сlient sent an invalid request" });
-      } else {
-        res.status(SERVER_ERROR).send({ message: "Something went wrong" });
-      }
+      checkErrors(err, res);
     });
 };
 
 module.exports.getUser = (req, res) => {
   User.findById({ _id: req.params.userId })
-    .orFail(() => {
-      throw new Error("Not found");
-    })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.message === "Not found") {
-        res.status(ERROR_NOT_FOUND).send({ message: "User not found" });
+    .then((user) => {
+      if (user) {
+        res.status(200).send({ data: user });
       } else {
-        res.status(SERVER_ERROR).send({ message: "Something went wrong" });
+        res.status(ERROR_NOT_FOUND).send({ message: "User not found" });
       }
+    })
+    .catch((err) => {
+      checkErrors(err, res);
     });
 };
 
@@ -38,13 +32,7 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        res
-          .status(ERROR_BAD_REQUEST)
-          .send({ message: "Сlient sent an invalid request" });
-      } else {
-        res.status(SERVER_ERROR).send({ message: "Something went wrong" });
-      }
+      checkErrors(err, res);
     });
 };
 
@@ -67,13 +55,7 @@ module.exports.updateProfile = (req, res) => {
       }
     })
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        res
-          .status(ERROR_BAD_REQUEST)
-          .send({ message: "Сlient sent an invalid request" });
-      } else {
-        res.status(SERVER_ERROR).send({ message: "Something went wrong" });
-      }
+      checkErrors(err, res);
     });
 };
 
@@ -96,12 +78,19 @@ module.exports.updateAvatar = (req, res) => {
       }
     })
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        res
-          .status(ERROR_BAD_REQUEST)
-          .send({ message: "Сlient sent an invalid request" });
-      } else {
-        res.status(SERVER_ERROR).send({ message: "Something went wrong" });
-      }
+      checkErrors(err, res);
     });
 };
+
+function checkErrors(err, res) {
+  if (
+    err instanceof mongoose.Error.CastError ||
+    err instanceof mongoose.Error.ValidationError
+  ) {
+    res
+      .status(ERROR_BAD_REQUEST)
+      .send({ message: "Сlient sent an invalid request" });
+  } else {
+    res.status(SERVER_ERROR).send({ message: "Something went wrong" });
+  }
+}
