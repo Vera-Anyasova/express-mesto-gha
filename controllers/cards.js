@@ -25,13 +25,15 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId, { new: true })
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        res.status(ERROR_NOT_FOUND).send({ message: "Card not found" });
+    .then((card) => {
+      if (card) {
+        res.status(200).send({ data: card });
       } else {
-        res.status(SERVER_ERROR).send({ message: "Something went wrong" });
+        res.status(ERROR_NOT_FOUND).send({ message: "Card not found" });
       }
+    })
+    .catch((err) => {
+      checkErrors(err, res);
     });
 };
 
