@@ -3,9 +3,11 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const users = require("./routes/users");
 const cards = require("./routes/cards");
-const { PORT, DB_CONNECT } = require("./config");
+
+require("dotenv").config();
 
 const app = express();
+const PORT = process.env.PORT;
 
 app.use(express.json());
 

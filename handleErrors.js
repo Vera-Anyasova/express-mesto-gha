@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { ERROR_BAD_REQUEST, SERVER_ERROR } = require("./config");
+const { ERROR_BAD_REQUEST, SERVER_ERROR } = require("./constants");
 
 function checkErrors(err, res) {
   if (

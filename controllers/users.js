@@ -1,6 +1,6 @@
 const User = require("../models/user");
 const { checkErrors } = require("../handleErrors");
-const { ERROR_NOT_FOUND } = require("../config");
+const { ERROR_NOT_FOUND } = require("../constants");
 
 module.exports.getUsers = (req, res) => {
   User.find({})
