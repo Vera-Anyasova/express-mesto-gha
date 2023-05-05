@@ -1,13 +1,23 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const path = require("path");
 const bodyParser = require("body-parser");
 const users = require("./routes/users");
 const cards = require("./routes/cards");
+const auth = require("./middlewares/auth");
+const { createUser, login } = require("./controllers/users");
+const cookieParser = require("cookie-parser");
+const handleErrors = require("./middlewares/handleErrors");
+const { errors } = require("celebrate");
+const { userValidation } = require("./middlewares/validation");
+
+require("dotenv").config();
 
 const app = express();
 const { PORT = 3000 } = process.env;
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -20,16 +30,14 @@ mongoose
   .then(() => console.log("DB is connected"))
   .catch((err) => console.log(err));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "64475124f70b70d379c6e4f3",
-  };
+app.post("/signup", userValidation, createUser);
+app.post("/signin", userValidation, login);
 
-  next();
-});
+app.use("/users", auth, users);
+app.use("/cards", auth, cards);
 
-app.use("/users", users);
-app.use("/cards", cards);
+app.use(errors());
+app.use(handleErrors);
 
 app.use("*", (req, res) => {
   res.status(404).send({ message: "Not found" });
