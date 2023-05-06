@@ -20,9 +20,10 @@ module.exports.createUser = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
-  return User.findUserByCredentials(email, password)
+  User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      const payload = { _id: user._id };
+      const token = jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: "7d",
       });
 
@@ -38,6 +39,7 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.getUsers = (req, res, next) => {
+  console.log(req.user);
   User.find({})
     .then((users) => res.send({ data: users }))
     .catch(next);
@@ -46,6 +48,7 @@ module.exports.getUsers = (req, res, next) => {
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
+      console.log(req.user);
       if (user) {
         res.status(200).send({ data: user });
       } else {
