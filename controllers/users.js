@@ -33,13 +33,13 @@ module.exports.login = (req, res, next) => {
           httpOnly: true,
           sameSite: true,
         })
+        .res.status(200)
         .send({ email });
     })
     .catch(next);
 };
 
 module.exports.getUsers = (req, res, next) => {
-  console.log(req.user);
   User.find({})
     .then((users) => res.send({ data: users }))
     .catch(next);
@@ -71,7 +71,6 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.updateProfile = (req, res, next) => {
-  const userId = req.user._id;
   User.findByIdAndUpdate(
     { _id: userId },
     { name: req.body.name, about: req.body.about },
