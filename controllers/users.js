@@ -20,24 +20,39 @@ module.exports.createUser = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
-  User.findUserByCredentials(email, password)
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      const payload = { _id: user._id };
-      const token = jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: "7d",
+      res.send({
+        token: jwt.sign({ _id: user._id }, "secret", {
+          expiresIn: "7d",
+        }),
       });
-
-      res
-        .cookie("jwt", token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-          sameSite: true,
-        })
-        .res.status(200)
-        .send({ email });
     })
     .catch(next);
 };
+// console.log(user);
+
+// module.exports.login = (req, res, next) => {
+//   const { email, password } = req.body;
+
+//   User.findUserByCredentials(email, password)
+//     .then((user) => {
+//       const payload = { _id: user._id };
+//       const token = jwt.sign(payload, process.env.JWT_SECRET, {
+//         expiresIn: "7d",
+//       });
+
+//       res
+//         .cookie("jwt", token, {
+//           maxAge: 3600000 * 24 * 7,
+//           httpOnly: true,
+//           sameSite: true,
+//         })
+//         .res.status(200)
+//         .send({ email });
+//     })
+//     .catch(next);
+// };
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
