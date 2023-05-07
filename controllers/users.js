@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const { NotFoundError, ConflictError } = require("../utils/errors");
+require("dotenv").config();
 
 module.exports.createUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body;

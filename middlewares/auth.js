@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { UnauthorizedError } = require("../utils/errors");
+require("dotenv").config();
 
 const extractBearerToken = (header) => {
   return header.replace("Bearer ", "");
