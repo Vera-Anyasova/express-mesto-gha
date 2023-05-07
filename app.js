@@ -1,12 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const path = require("path");
 const bodyParser = require("body-parser");
 const users = require("./routes/users");
 const cards = require("./routes/cards");
 const auth = require("./middlewares/auth");
 const { createUser, login } = require("./controllers/users");
-const cookieParser = require("cookie-parser");
 const handleErrors = require("./middlewares/handleErrors");
 const { errors } = require("celebrate");
 const { userValidation } = require("./middlewares/validation");
@@ -14,16 +12,15 @@ const { userValidation } = require("./middlewares/validation");
 require("dotenv").config();
 
 const app = express();
-const { PORT = 3000 } = process.env;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(cookieParser());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/mestodb", {
+  .connect(process.env.DB_CONN, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
