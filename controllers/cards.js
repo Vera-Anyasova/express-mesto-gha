@@ -17,38 +17,19 @@ module.exports.createCard = (req, res, next) => {
     .catch(next);
 };
 
-// module.exports.deleteCard = (req, res, next) => {
-//   Card.findByIdAndRemove(req.params.cardId, { new: true })
-//     .populate("owner")
-//     .then((card) => {
-//       if (card) {
-//         res.send({ data: card });
-//       } else {
-//         throw new NotFoundError("Карточка не найдена");
-//       }
-//     })
-//     .catch((err) => {
-//       if (err.name === "ForbiddenError") {
-//         next(new ForbiddenError("Нет прав доступа"));
-//       }
-//       next(err);
-//     });
-// };
-
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId, { new: true })
-    .populate("owner")
+  Card.findByIdAndRemove(req.params.cardId)
+    .orFail(() => {
+      throw new NotFoundError("Карточка не найдена");
+    })
     .then((card) => {
-      if (card || card.owner_id === req.user._id) {
+      if (card.owner._id.toString() === req.user._id) {
         res.send({ data: card });
       } else {
         throw new ForbiddenError("Нет прав доступа");
       }
     })
     .catch((err) => {
-      if (err.name === "ForbiddenError") {
-        next(new NotFoundError("Карточка не найдена"));
-      }
       next(err);
     });
 };
