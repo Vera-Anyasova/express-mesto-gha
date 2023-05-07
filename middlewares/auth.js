@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 const { UnauthorizedError } = require("../utils/errors");
-require("dotenv").config();
 
 const extractBearerToken = (header) => {
   return header.replace("Bearer ", "");
@@ -17,7 +16,7 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, process.env.JWT_SECRET);
+    payload = jwt.verify(token, "secret");
   } catch (err) {
     return next(new UnauthorizedError("Необходима авторизация"));
   }

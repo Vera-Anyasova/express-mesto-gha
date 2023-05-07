@@ -2,7 +2,6 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const { NotFoundError, ConflictError } = require("../utils/errors");
-require("dotenv").config();
 
 module.exports.createUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body;
@@ -24,7 +23,7 @@ module.exports.login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       res.send({
-        token: jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+        token: jwt.sign({ _id: user._id }, "secret", {
           expiresIn: "7d",
         }),
       });
