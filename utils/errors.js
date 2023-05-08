@@ -1,7 +1,7 @@
 class GeneralError extends Error {
-  constructor(message) {
-    super();
-    this.message = message;
+  constructor(message, type) {
+    super(message);
+    this.type = type;
   }
 
   checkError() {
@@ -20,7 +20,6 @@ class GeneralError extends Error {
     if (this instanceof ConflictError) {
       return 409;
     }
-    return 500;
   }
 }
 

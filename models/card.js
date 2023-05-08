@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { regex } = require("../constants");
 
 const cardSchema = new mongoose.Schema(
   {
@@ -11,6 +12,10 @@ const cardSchema = new mongoose.Schema(
     link: {
       type: String,
       required: true,
+      validate: {
+        validator: (v) => regex.test(v),
+        message: "{VALUE} is not a valid url",
+      },
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
@@ -27,7 +32,6 @@ const cardSchema = new mongoose.Schema(
     createdAt: {
       date: { type: Date, default: Date.now },
     },
-    __v: { type: Number, select: false },
   },
   { versionKey: false }
 );

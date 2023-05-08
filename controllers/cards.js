@@ -1,6 +1,18 @@
 const Card = require("../models/card");
-const { NotFoundError } = require("../utils/errors");
-const { ForbiddenError } = require("../utils/errors");
+const { NotFoundError, ForbiddenError } = require("../utils/errors");
+
+const updateDataCard = (req, res, updateData, next) => {
+  Card.findByIdAndUpdate(req.params.cardId, updateData, { new: true })
+    .populate(["owner", "likes"])
+    .then((card) => {
+      if (card) {
+        res.send({ data: card });
+      } else {
+        throw new NotFoundError("Карточка не найдена");
+      }
+    })
+    .catch(next);
+};
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -18,7 +30,7 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findOneAndRemove({ _id: req.params.cardId })
     .orFail(() => {
       throw new NotFoundError("Карточка не найдена");
     })
@@ -35,35 +47,11 @@ module.exports.deleteCard = (req, res, next) => {
 };
 
 module.exports.addLike = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true }
-  )
-    .populate(["owner", "likes"])
-    .then((card) => {
-      if (card) {
-        res.send({ data: card });
-      } else {
-        throw new NotFoundError("Карточка не найдена");
-      }
-    })
-    .catch(next);
+  const updateData = { $addToSet: { likes: req.user._id } };
+  updateDataCard(req, res, updateData, next);
 };
 
 module.exports.removeLike = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } },
-    { new: true }
-  )
-    .populate(["owner", "likes"])
-    .then((card) => {
-      if (card) {
-        res.send({ data: card });
-      } else {
-        throw new NotFoundError("Карточка не найдена");
-      }
-    })
-    .catch(next);
+  const updateData = { $pull: { likes: req.user._id } };
+  updateDataCard(req, res, updateData, next);
 };

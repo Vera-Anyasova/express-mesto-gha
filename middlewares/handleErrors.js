@@ -4,7 +4,7 @@ const { GeneralError, BadRequestError } = require("../utils/errors");
 const handleErrors = (err, req, res, next) => {
   if (err instanceof GeneralError) {
     return res.status(err.checkError()).send({
-      status: "error",
+      status: console.log(err),
       message: err.message,
     });
   }
@@ -19,7 +19,6 @@ const handleErrors = (err, req, res, next) => {
   }
 
   return res.status(500).send({
-    status: "error",
     message: "На сервере произошла ошибка",
   });
 };
