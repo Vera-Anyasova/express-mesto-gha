@@ -2,6 +2,7 @@ const BadRequestError = require("../utils/errors/bad-request-error");
 const UnauthorizedError = require("../utils/errors/unauthorized-error");
 const ForbiddenError = require("../utils/errors/forbidden-error");
 const NotFoundError = require("../utils/errors/not-found-error");
+const ConflictError = require("../utils/errors/conflict-error");
 
 const {
   STATUS_BAD_REQUEST,
@@ -11,6 +12,7 @@ const {
   STATUS_CONFLICT,
   STATUS_INTERNAL_SERVER_ERROR,
 } = require("../constants");
+const ConflictError = require("../utils/errors/conflict-error");
 
 const handleErrors = (err, req, res, next) => {
   if (err instanceof BadRequestError) {
@@ -29,10 +31,8 @@ const handleErrors = (err, req, res, next) => {
     res.status(STATUS_NOT_FOUND).send({ message: err.message });
     return;
   }
-  if (err.code === 11000) {
-    res
-      .status(STATUS_CONFLICT)
-      .send({ message: "Указанный email уже существует" });
+  if (err.code === 11000 || err instanceof ConflictError) {
+    res.status(STATUS_CONFLICT).send({ message: err.message });
     return;
   }
   return res.status(STATUS_INTERNAL_SERVER_ERROR).send({
