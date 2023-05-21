@@ -1,5 +1,7 @@
 const Card = require("../models/card");
-const { NotFoundError, ForbiddenError } = require("../utils/errors");
+const NotFoundError = require("../utils/errors/not-found-error");
+const ForbiddenError = require("../utils/errors/forbidden-error");
+// const { NotFoundError, ForbiddenError } = require("../utils/errors");
 
 const updateDataCard = (req, res, updateData, next) => {
   Card.findByIdAndUpdate(req.params.cardId, updateData, { new: true })
@@ -30,20 +32,18 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findOneAndRemove({ _id: req.params.cardId })
+  Card.findById({ _id: req.params.cardId })
     .orFail(() => {
       throw new NotFoundError("Карточка не найдена");
     })
     .then((card) => {
       if (card.owner._id.toString() === req.user._id) {
-        res.send({ data: card });
+        return Card.deleteOne(card).then(() => res.send({ data: card }));
       } else {
         throw new ForbiddenError("Нет прав доступа");
       }
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports.addLike = (req, res, next) => {

@@ -1,12 +1,15 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const NotFoundError = require("../utils/errors/not-found-error");
+const BadRequestError = require("../utils/errors/bad-request-error");
+const { STATUS_CONFLICT } = require("../constants");
 
-const {
-  NotFoundError,
-  ConflictError,
-  BadRequestError,
-} = require("../utils/errors");
+// const {
+//   NotFoundError,
+//   ConflictError,
+//   BadRequestError,
+// } = require("../utils/errors");
 
 const getDataUser = (req, res, dataUserId, next) => {
   User.findById({ _id: dataUserId })
@@ -36,6 +39,24 @@ const updateDataUser = (req, res, updateData, next) => {
     .catch(next);
 };
 
+// module.exports.createUser = (req, res, next) => {
+//   const { email, password, name, about, avatar } = req.body;
+
+//   bcrypt
+//     .hash(password, 10)
+//     .then((hash) => User.create({ email, password: hash, name, about, avatar }))
+//     .then((user) => res.status(201).send({ data: user }))
+//     .catch((err) => {
+//       if (err.code === 11000) {
+//         next(new ConflictError("Указанный email уже существует"));
+//       } else if (err.name === "ValidationError") {
+//         next(new BadRequestError("Произошла ошибка валидации"));
+//       } else {
+//         next(err);
+//       }
+//     });
+// };
+
 module.exports.createUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body;
 
@@ -45,7 +66,10 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.code === 11000) {
-        next(new ConflictError("Указанный email уже существует"));
+        // next(new ConflictError("Указанный email уже существует"));
+        return res
+          .status(STATUS_CONFLICT)
+          .send("Указанный email уже существует");
       } else if (err.name === "ValidationError") {
         next(new BadRequestError("Произошла ошибка валидации"));
       } else {
