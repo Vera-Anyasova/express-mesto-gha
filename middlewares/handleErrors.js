@@ -12,7 +12,7 @@ const {
   STATUS_CONFLICT,
   STATUS_INTERNAL_SERVER_ERROR,
 } = require("../constants");
-const ConflictError = require("../utils/errors/conflict-error");
+// const ConflictError = require("../utils/errors/conflict-error");
 
 const handleErrors = (err, req, res, next) => {
   if (err instanceof BadRequestError) {

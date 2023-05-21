@@ -6,7 +6,7 @@ const handleErrors = require("./middlewares/handleErrors");
 
 const app = express();
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3002 } = process.env;
 
 app.use(express.json());
 
